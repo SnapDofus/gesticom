@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
+use App\Models\Expense;
+use App\Models\Budget;
 use App\Http\Requests\StoreMaterialRequest;
 use App\Http\Requests\UpdateMaterialRequest;
 use Illuminate\Http\Request;
@@ -95,6 +97,21 @@ class MaterialController extends Controller
             'status' => $status,
             'purchase_date' => now()->toDateString(),
         ]);
+
+        $amount = $material->quantity_planned > 0
+            ? ($qtyPurchased / $material->quantity_planned) * $material->estimated_price
+            : $material->estimated_price;
+
+        Expense::create([
+            'label' => "Achat de {$qtyPurchased} {$material->name}",
+            'amount' => round($amount, 0),
+            'category' => 'materials',
+            'date' => now()->toDateString(),
+            'user_id' => Auth::id(),
+        ]);
+
+        Budget::where('user_id', Auth::id())->where('category', 'materials')->increment('spent_amount', round($amount, 0));
+        Budget::where('user_id', Auth::id())->where('category', 'global')->increment('spent_amount', round($amount, 0));
 
         return redirect()->route('materials.index')->with('success', "Achat de {$qtyPurchased} {$material->name} enregistré.");
     }
