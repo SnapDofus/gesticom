@@ -12,7 +12,7 @@
 
     <div class="space-y-4">
         <div class="flex justify-end">
-            <button onclick="openModal('addPhotoModal')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
+            <button onclick="openModal('addPhotoModal')" class="mobile-btn-primary">
                 + Ajouter des photos
             </button>
         </div>

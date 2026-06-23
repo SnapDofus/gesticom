@@ -101,3 +101,67 @@ table.dataTable tbody tr:hover {
     display: block;
     clear: both;
 }
+
+/* Mobile card layout */
+.mobile-card {
+    @apply bg-white rounded-2xl border border-gray-100 p-4 mb-3 transition-all;
+}
+
+.mobile-card:active {
+    transform: scale(0.985);
+}
+
+.mobile-btn {
+    @apply px-4 py-2.5 text-sm font-medium rounded-xl min-h-[44px] inline-flex items-center justify-center transition-colors;
+}
+
+.mobile-btn-primary {
+    @apply mobile-btn bg-purple-600 text-white hover:bg-purple-700;
+}
+
+.mobile-btn-ghost {
+    @apply mobile-btn text-purple-600 bg-purple-50 hover:bg-purple-100;
+}
+
+.mobile-btn-danger {
+    @apply mobile-btn text-red-600 bg-red-50 hover:bg-red-100;
+}
+
+/* Bottom sheet modal */
+.modal-bottom-sheet {
+    @apply fixed inset-x-0 bottom-0 m-0 rounded-t-2xl shadow-2xl max-h-[92vh] overflow-y-auto;
+}
+
+.drag-indicator {
+    @apply w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4;
+}
+
+/* Responsive DataTables on mobile */
+@media (max-width: 767px) {
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_info {
+        float: none;
+        text-align: center;
+        padding: 4px 0;
+    }
+    .dataTables_wrapper .dataTables_filter {
+        float: none;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 8px;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100%;
+        margin: 6px 0 0;
+        box-sizing: border-box;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        float: none;
+        text-align: center;
+        padding-top: 8px;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+}

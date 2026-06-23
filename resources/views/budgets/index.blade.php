@@ -6,7 +6,7 @@
         $catColors = ['global' => 'purple', 'materials' => 'blue', 'labor' => 'orange', 'transport' => 'teal', 'misc' => 'gray'];
     @endphp
 
-    <div class="space-y-6">
+    <div class="space-y-4">
         @if($global)
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-4">
