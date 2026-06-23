@@ -17,6 +17,7 @@
                             <th class="pb-3 font-medium">Matériau</th>
                             <th class="pb-3 font-medium">Qté prévue</th>
                             <th class="pb-3 font-medium">Qté achetée</th>
+                            <th class="pb-3 font-medium">Unité</th>
                             <th class="pb-3 font-medium">Prix estimé</th>
                             <th class="pb-3 font-medium">Prix réel</th>
                             <th class="pb-3 font-medium">Statut</th>
@@ -29,6 +30,7 @@
                             <td class="py-3 font-medium text-gray-900">{{ $material->name }}</td>
                             <td class="py-3">{{ $material->quantity_planned }}</td>
                             <td class="py-3">{{ $material->quantity_purchased }}</td>
+                            <td class="py-3 text-gray-500">{{ $material->unit ?? '-' }}</td>
                             <td class="py-3">{{ number_format($material->estimated_price, 0, ',', ' ') }} FCFA</td>
                             <td class="py-3">{{ $material->actual_price ? number_format($material->actual_price, 0, ',', ' ') . ' FCFA' : '-' }}</td>
                             <td class="py-3">
@@ -41,7 +43,7 @@
                                 <div class="flex items-center gap-2">
                                     <button onclick="editMaterial({{ $material->id }})" class="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">Modifier</button>
                                     @if($material->status !== 'fully_purchased')
-                                    <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }})" class="px-3 py-1.5 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors">Acheter</button>
+                                    <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }}, '{{ $material->unit }}')" class="px-3 py-1.5 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors">Acheter</button>
                                     @endif
                                     <form action="{{ route('materials.destroy', $material) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce matériau ?')">
                                         @csrf @method('DELETE')
@@ -83,11 +85,11 @@
                 <div class="grid grid-cols-2 gap-3 text-sm">
                     <div>
                         <span class="text-gray-400">Qté prévue</span>
-                        <p class="font-medium text-gray-900 mt-0.5">{{ $material->quantity_planned }}</p>
+                        <p class="font-medium text-gray-900 mt-0.5">{{ $material->quantity_planned }} {{ $material->unit }}</p>
                     </div>
                     <div>
                         <span class="text-gray-400">Qté achetée</span>
-                        <p class="font-medium text-gray-900 mt-0.5">{{ $material->quantity_purchased }}</p>
+                        <p class="font-medium text-gray-900 mt-0.5">{{ $material->quantity_purchased }} {{ $material->unit }}</p>
                     </div>
                     <div>
                         <span class="text-gray-400">Prix estimé</span>
@@ -99,7 +101,7 @@
                     </div>
                 </div>
                 @if($material->status !== 'fully_purchased')
-                <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }})" class="mobile-btn-primary w-full mt-3">Acheter</button>
+                <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }}, '{{ $material->unit }}')" class="mobile-btn-primary w-full mt-3">Acheter</button>
                 @endif
             </div>
             @empty
@@ -125,6 +127,10 @@
                         <input type="text" name="name" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Unité</label>
+                        <input type="text" name="unit" placeholder="ex: briques, kg, tonnes" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Quantité prévue</label>
                         <input type="number" step="0.01" name="quantity_planned" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
@@ -133,11 +139,11 @@
                         <input type="number" step="0.01" name="quantity_purchased" value="0" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix estimé (unité)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix estimé (total)</label>
                         <input type="number" step="0.01" name="estimated_price" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix réel (unité)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix réel (total)</label>
                         <input type="number" step="0.01" name="actual_price" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                     <div>
@@ -174,6 +180,10 @@
                     <div class="col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
                         <input type="text" name="name" id="edit_name" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Unité</label>
+                        <input type="text" name="unit" id="edit_unit" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Quantité prévue</label>
@@ -233,15 +243,16 @@
             document.body.style.overflow = '';
         }
 
-        function purchaseMaterial(id, name, planned, purchased) {
+        function purchaseMaterial(id, name, planned, purchased, unit) {
             const remaining = planned - purchased;
             if (remaining <= 0) {
                 Swal.fire('Déjà acheté', 'Ce matériau est déjà entièrement acheté.', 'info');
                 return;
             }
+            const unitLabel = unit ? ' ' + unit : '';
             Swal.fire({
                 title: 'Acheter ' + name,
-                html: `<p class="text-sm text-gray-500 mb-3">Restant à acheter : <strong>${remaining}</strong> sur <strong>${planned}</strong></p>
+                html: `<p class="text-sm text-gray-500 mb-3">Restant à acheter : <strong>${remaining}${unitLabel}</strong> sur <strong>${planned}${unitLabel}</strong></p>
                     <input type="number" id="purchase-qty" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg text-center font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500" value="${remaining}" min="0.01" max="${remaining}" step="0.01">`,
                 showCancelButton: true,
                 confirmButtonText: 'Valider l\'achat',
@@ -260,16 +271,14 @@
                 }
             }).then(result => {
                 if (result.isConfirmed) {
-                    fetch('/materials/' + id + '/purchased', {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ quantity: result.value })
-                    }).then(() => {
-                        window.location.href = '/materials';
-                    });
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/materials/' + id + '/purchased';
+                    form.innerHTML = '<input name="_token" value="{{ csrf_token() }}">' +
+                                     '<input name="_method" value="PATCH">' +
+                                     '<input name="quantity" value="' + parseFloat(result.value) + '">';
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             });
         }
@@ -279,6 +288,7 @@
                 .then(r => r.json())
                 .then(d => {
                     document.getElementById('edit_name').value = d.name;
+                    document.getElementById('edit_unit').value = d.unit || '';
                     document.getElementById('edit_quantity_planned').value = d.quantity_planned;
                     document.getElementById('edit_quantity_purchased').value = d.quantity_purchased;
                     document.getElementById('edit_estimated_price').value = d.estimated_price;

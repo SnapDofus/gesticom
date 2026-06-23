@@ -12,6 +12,7 @@ class Material extends Model
 
     protected $fillable = [
         'name',
+        'unit',
         'quantity_planned',
         'quantity_purchased',
         'estimated_price',
@@ -43,11 +44,11 @@ class Material extends Model
 
     public function getTotalActualCostAttribute()
     {
-        return $this->actual_price ? $this->quantity_purchased * $this->actual_price : 0;
+        return $this->actual_price ?? 0;
     }
 
     public function getTotalEstimatedCostAttribute()
     {
-        return $this->estimated_price * $this->quantity_planned;
+        return $this->estimated_price;
     }
 }

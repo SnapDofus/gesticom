@@ -15,13 +15,14 @@ class UpdateMaterialRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'unit' => 'nullable|string|max:100',
             'quantity_planned' => 'required|numeric|min:0',
             'quantity_purchased' => 'required|numeric|min:0',
             'estimated_price' => 'required|numeric|min:0',
             'actual_price' => 'nullable|numeric|min:0',
             'supplier' => 'nullable|string|max:255',
             'purchase_date' => 'nullable|date',
-            'status' => 'required|in:not_purchased,partially_purchased,fully_purchased',
+            'status' => 'nullable|in:not_purchased,partially_purchased,fully_purchased',
             'observation' => 'nullable|string',
         ];
     }

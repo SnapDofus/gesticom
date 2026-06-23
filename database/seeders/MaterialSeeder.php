@@ -15,24 +15,25 @@ class MaterialSeeder extends Seeder
         if (!$user) return;
 
         $materials = [
-            ['name' => 'Brique de 15', 'quantity_planned' => 1000, 'estimated_price' => 400],
-            ['name' => 'Ciment', 'quantity_planned' => 2, 'estimated_price' => 90000],
-            ['name' => 'Semelles isolées', 'quantity_planned' => 11, 'estimated_price' => 4000],
-            ['name' => 'Barres de 10', 'quantity_planned' => 22, 'estimated_price' => 5000],
-            ['name' => 'Barres de 6', 'quantity_planned' => 11, 'estimated_price' => 3273],
-            ['name' => 'Fil d\'attache', 'quantity_planned' => 1, 'estimated_price' => 7000],
-            ['name' => 'Semelles filantes 6m', 'quantity_planned' => 10, 'estimated_price' => 11000],
-            ['name' => 'Planches de coffrage 4m', 'quantity_planned' => 10, 'estimated_price' => 6000],
-            ['name' => 'Fonds de 15 de 3m', 'quantity_planned' => 10, 'estimated_price' => 3500],
-            ['name' => 'Lattes de 5m', 'quantity_planned' => 15, 'estimated_price' => 3000],
-            ['name' => 'Chevrons de 4m', 'quantity_planned' => 20, 'estimated_price' => 5000],
-            ['name' => 'Pointes de 80', 'quantity_planned' => 5, 'estimated_price' => 1400],
-            ['name' => 'Pointes TOC', 'quantity_planned' => 3, 'estimated_price' => 2500],
+            ['name' => 'Brique de 15', 'unit' => 'briques', 'quantity_planned' => 1000, 'estimated_price' => 400000],
+            ['name' => 'Ciment', 'unit' => 'tonnes', 'quantity_planned' => 2, 'estimated_price' => 180000],
+            ['name' => 'Semelles isolées', 'unit' => 'unités', 'quantity_planned' => 11, 'estimated_price' => 44000],
+            ['name' => 'Barres de 10', 'unit' => 'barres', 'quantity_planned' => 22, 'estimated_price' => 110000],
+            ['name' => 'Barres de 6', 'unit' => 'barres', 'quantity_planned' => 11, 'estimated_price' => 36000],
+            ['name' => 'Fil d\'attache', 'unit' => 'rouleaux', 'quantity_planned' => 1, 'estimated_price' => 7000],
+            ['name' => 'Semelles filantes 6m', 'unit' => 'unités', 'quantity_planned' => 10, 'estimated_price' => 110000],
+            ['name' => 'Planches de coffrage 4m', 'unit' => 'planches', 'quantity_planned' => 10, 'estimated_price' => 60000],
+            ['name' => 'Fonds de 15 de 3m', 'unit' => 'fonds', 'quantity_planned' => 10, 'estimated_price' => 35000],
+            ['name' => 'Lattes de 5m', 'unit' => 'lattes', 'quantity_planned' => 15, 'estimated_price' => 45000],
+            ['name' => 'Chevrons de 4m', 'unit' => 'chevrons', 'quantity_planned' => 20, 'estimated_price' => 100000],
+            ['name' => 'Pointes de 80', 'unit' => 'kg', 'quantity_planned' => 5, 'estimated_price' => 7000],
+            ['name' => 'Pointes TOC', 'unit' => 'kg', 'quantity_planned' => 3, 'estimated_price' => 7500],
         ];
 
         foreach ($materials as $material) {
             Material::create([
                 'name' => $material['name'],
+                'unit' => $material['unit'],
                 'quantity_planned' => $material['quantity_planned'],
                 'quantity_purchased' => 0,
                 'estimated_price' => $material['estimated_price'],
