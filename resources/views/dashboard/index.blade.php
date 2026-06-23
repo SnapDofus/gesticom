@@ -30,7 +30,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-500">Dépensé</p>
-                        <p class="text-2xl font-bold text-{{ $stats['budgetProgress'] > 100 ? 'red' : 'orange' }}-600 mt-1">{{ number_format($stats['totalSpent'], 0, ',', ' ') }} FCFA</p>
+                        <p class="text-2xl font-bold mt-1 {{ $stats['budgetProgress'] > 100 ? 'text-red-600' : 'text-orange-600' }}">{{ number_format($stats['totalSpent'], 0, ',', ' ') }} FCFA</p>
                     </div>
                     <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
@@ -38,7 +38,7 @@
                 </div>
                 <div class="mt-3">
                     <div class="w-full bg-gray-200 rounded-full h-1.5">
-                        <div class="bg-{{ $stats['budgetProgress'] > 100 ? 'red' : 'purple' }}-600 h-1.5 rounded-full" style="width: {{ min(100, $stats['budgetProgress']) }}%"></div>
+                        <div class="h-1.5 rounded-full {{ $stats['budgetProgress'] > 100 ? 'bg-red-600' : 'bg-purple-600' }}" style="width: {{ min(100, $stats['budgetProgress']) }}%"></div>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">{{ $stats['budgetProgress'] }}% du budget</p>
                 </div>
@@ -194,7 +194,7 @@
                 labels: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catLabels[$k] ?? $k)) !!},
                 datasets: [{
                     data: {!! json_encode($expensesByCategory->values()) !!},
-                    backgroundColor: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catColors[$k] ?? colors.gray)) !!},
+                    backgroundColor: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catColors[$k] ?? '#6b7280')) !!},
                 }]
             },
             options: {
