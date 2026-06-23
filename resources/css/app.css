@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+}
+
+@layer components {
+    .stat-card {
+        @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5 transition-all hover:shadow-md;
+    }
+
+    .btn-primary {
+        @apply px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium;
+    }
+
+    .btn-secondary {
+        @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium;
+    }
+}
+
+/* DataTables custom styling */
+.dataTables_wrapper {
+    @apply text-sm;
+}
+
+.dataTables_wrapper .dataTables_length {
+    @apply mb-3 float-left;
+}
+
+.dataTables_wrapper .dataTables_length label {
+    @apply text-gray-500;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    @apply border border-gray-300 rounded-lg px-2 py-1.5 text-sm bg-white mx-1 focus:outline-none focus:ring-2 focus:ring-purple-500;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    @apply mb-3 float-right;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+    @apply text-gray-500;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    @apply border border-gray-300 rounded-lg px-3 py-1.5 text-sm ml-2 focus:outline-none focus:ring-2 focus:ring-purple-500;
+}
+
+.dataTables_wrapper .dataTables_info {
+    @apply text-sm text-gray-500 mt-3 inline-block;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    @apply mt-3 float-right;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    @apply px-3 py-1.5 text-sm border border-gray-200 rounded-lg mx-0.5 hover:bg-gray-50 transition-colors cursor-pointer;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    @apply bg-purple-600 text-white border-purple-600 hover:bg-purple-700;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    @apply text-gray-300 cursor-not-allowed hover:bg-transparent;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current):not(.disabled) {
+    @apply bg-gray-100;
+}
+
+table.dataTable {
+    @apply w-full;
+}
+
+table.dataTable thead th {
+    @apply pb-3 font-medium text-left text-gray-500 border-b border-gray-100;
+}
+
+table.dataTable tbody td {
+    @apply py-3 border-b border-gray-50;
+}
+
+table.dataTable tbody tr:hover {
+    @apply bg-gray-50;
+}
+
+.dataTables_wrapper:after {
+    content: '';
+    display: block;
+    clear: both;
+}
