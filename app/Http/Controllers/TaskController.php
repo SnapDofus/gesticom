@@ -86,7 +86,7 @@ class TaskController extends Controller
 
         $task->update($data);
 
-        return response()->json(['success' => true, 'progress' => $request->progress]);
+        return redirect()->route('tasks.index')->with('success', 'Avancement mis à jour.');
     }
 
     private function notifyTaskCompleted($task)

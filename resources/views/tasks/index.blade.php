@@ -58,9 +58,12 @@
                 @endif
                 @if($task->status !== 'completed')
                 <div class="mt-3">
-                    <input type="range" min="0" max="100" value="{{ $task->progress }}"
-                        onchange="updateTaskProgress({{ $task->id }}, this.value)"
-                        class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600 touch-pan-y">
+                    <form id="progress-form-{{ $task->id }}" action="{{ route('tasks.progress', $task) }}" method="POST">
+                        @csrf @method('PATCH')
+                        <input type="range" min="0" max="100" name="progress" value="{{ $task->progress }}"
+                            onchange="document.getElementById('progress-form-{{ $task->id }}').submit()"
+                            class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600 touch-pan-y">
+                    </form>
                 </div>
                 @endif
             </div>
@@ -154,6 +157,11 @@
             fetch(`/tasks/${id}/edit`)
                 .then(r => r.json())
                 .then(d => {
+                    const stageLabels = {'foundation':'Fondation','rebar':'Ferraillage','formwork':'Coffrage','slab':'Dallage','wall_elevation':'Élévation des murs','framing':'Charpente','roofing':'Toiture','electrical':'Électricité','plumbing':'Plomberie','tiling':'Carrelage','painting':'Peinture','finishing':'Finitions'};
+                    const statusLabels = {'not_started':'Non commencé','in_progress':'En cours','completed':'Terminé'};
+                    let stageOpts = '', statusOpts = '';
+                    for (const [k,v] of Object.entries(stageLabels)) stageOpts += `<option value="${k}" ${d.stage===k?'selected':''}>${v}</option>`;
+                    for (const [k,v] of Object.entries(statusLabels)) statusOpts += `<option value="${k}" ${d.status===k?'selected':''}>${v}</option>`;
                     Swal.fire({
                         title: 'Modifier la tâche',
                         html: `<form id="editTaskForm" action="/tasks/${id}" method="POST">
@@ -161,13 +169,9 @@
                             <input type="hidden" name="_method" value="PUT">
                             <div class="text-left space-y-3">
                                 <div><label class="block text-sm font-medium">Nom</label><input type="text" name="name" value="${d.name}" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+                                <div><label class="block text-sm font-medium">Étape</label><select name="stage" class="w-full border rounded-lg px-3 py-2 text-sm">${stageOpts}</select></div>
                                 <div><label class="block text-sm font-medium">Avancement (%)</label><input type="number" min="0" max="100" name="progress" value="${d.progress}" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
-                                <div><label class="block text-sm font-medium">Statut</label>
-                                    <select name="status" class="w-full border rounded-lg px-3 py-2 text-sm">
-                                        <option value="not_started" ${d.status === 'not_started' ? 'selected' : ''}>Non commencé</option>
-                                        <option value="in_progress" ${d.status === 'in_progress' ? 'selected' : ''}>En cours</option>
-                                        <option value="completed" ${d.status === 'completed' ? 'selected' : ''}>Terminé</option>
-                                    </select></div>
+                                <div><label class="block text-sm font-medium">Statut</label><select name="status" class="w-full border rounded-lg px-3 py-2 text-sm">${statusOpts}</select></div>
                                 <div><label class="block text-sm font-medium">Description</label><textarea name="description" rows="2" class="w-full border rounded-lg px-3 py-2 text-sm">${d.description || ''}</textarea></div>
                             </div></form>`,
                         showCancelButton: true,

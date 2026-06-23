@@ -19,7 +19,7 @@ class StoreTaskRequest extends FormRequest
             'stage' => 'required|in:foundation,rebar,formwork,slab,wall_elevation,framing,roofing,electrical,plumbing,tiling,painting,finishing',
             'status' => 'required|in:not_started,in_progress,completed',
             'start_date' => 'nullable|date',
-            'expected_end_date' => 'nullable|date|after_or_equal:start_date',
+            'expected_end_date' => 'nullable|date',
             'actual_end_date' => 'nullable|date',
             'progress' => 'required|integer|min:0|max:100',
         ];
