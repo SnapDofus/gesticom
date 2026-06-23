@@ -24,6 +24,9 @@
     }
 }
 
+/* Alpine.js x-cloak */
+[x-cloak] { display: none !important; }
+
 /* DataTables custom styling */
 .dataTables_wrapper {
     @apply text-sm;
