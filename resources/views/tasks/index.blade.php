@@ -22,56 +22,57 @@
         <div class="grid grid-cols-1 gap-3 md:gap-4">
             @foreach($tasks as $task)
             <div class="mobile-card">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-start space-x-3 flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-start space-x-3 min-w-0 flex-1">
                         <div class="w-3 h-3 rounded-full shrink-0 mt-1 {{ $task->status === 'completed' ? 'bg-green-500' : ($task->status === 'in_progress' ? 'bg-blue-500' : 'bg-gray-300') }}"></div>
                         <div class="min-w-0">
                             <h3 class="font-semibold text-gray-900 text-base truncate">{{ $task->name }}</h3>
                             <p class="text-xs text-gray-500 mt-0.5">{{ $stageLabels[$task->stage] ?? $task->stage }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 sm:shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-semibold text-gray-700 min-w-[2.5rem]">{{ $task->progress }}%</span>
-                            <div class="w-20 sm:w-24 bg-gray-200 rounded-full h-2.5">
-                                <div class="bg-purple-600 h-2.5 rounded-full transition-all" style="width: {{ $task->progress }}%"></div>
-                            </div>
-                        </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        @if($task->status === 'not_started')
+                        <form action="{{ route('tasks.status', $task) }}" method="POST">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="status" value="in_progress">
+                            <button type="submit" class="text-xs px-3 py-1.5 font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg whitespace-nowrap">Commencer</button>
+                        </form>
+                        @endif
+                        @if($task->status === 'in_progress')
+                        <form action="{{ route('tasks.status', $task) }}" method="POST">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="status" value="completed">
+                            <button type="submit" class="text-xs px-3 py-1.5 font-medium text-green-600 bg-green-50 hover:bg-green-100 rounded-lg whitespace-nowrap">Terminer</button>
+                        </form>
+                        @endif
                         <span class="px-2.5 py-1 text-xs font-medium rounded-full whitespace-nowrap {{ $statusColors[$task->status] ?? 'bg-gray-100' }}">
                             {{ $statusLabels[$task->status] ?? $task->status }}
                         </span>
-                        <div class="flex items-center gap-1.5">
-                            @if($task->status === 'not_started')
-                            <form action="{{ route('tasks.status', $task) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="in_progress">
-                                <button type="submit" class="text-xs px-2.5 py-1.5 font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors whitespace-nowrap">Commencer</button>
-                            </form>
-                            @endif
-                            @if($task->status === 'in_progress')
-                            <form action="{{ route('tasks.status', $task) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="completed">
-                                <button type="submit" class="text-xs px-2.5 py-1.5 font-medium text-green-600 bg-green-50 hover:bg-green-100 rounded-lg transition-colors whitespace-nowrap">Terminer</button>
-                            </form>
-                            @endif
-                            <button onclick="editTask({{ $task->id }})" class="w-9 h-9 flex items-center justify-center rounded-xl bg-purple-50 text-purple-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        <button onclick="editTask({{ $task->id }})" class="w-9 h-9 flex items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <form action="{{ route('tasks.destroy', $task) }}" method="POST" onsubmit="return confirm('Supprimer cette tâche ?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
-                            <form action="{{ route('tasks.destroy', $task) }}" method="POST" onsubmit="return confirm('Supprimer cette tâche ?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-500">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
                 @if($task->description)
                 <p class="mt-2 text-sm text-gray-500">{{ $task->description }}</p>
                 @endif
-                @if($task->status !== 'completed')
-                <div class="mt-3">
+                <div class="mt-3 flex items-center gap-3">
+                    <span class="text-sm font-semibold text-gray-700 shrink-0">{{ $task->progress }}%</span>
+                    <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                        <div class="h-2.5 rounded-full transition-all duration-300
+                            {{ $task->status === 'completed' ? 'bg-green-500' : ($task->status === 'in_progress' ? 'bg-purple-600' : 'bg-gray-300') }}"
+                            style="width: {{ $task->progress }}%">
+                        </div>
+                    </div>
+                </div>
+                @if($task->status === 'in_progress')
+                <div class="mt-2">
                     <form id="progress-form-{{ $task->id }}" action="{{ route('tasks.progress', $task) }}" method="POST">
                         @csrf @method('PATCH')
                         <input type="range" min="0" max="100" name="progress" value="{{ $task->progress }}"
@@ -152,19 +153,6 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = '';
-        }
-
-        function updateTaskProgress(id, value) {
-            fetch(`/tasks/${id}/progress`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ progress: value })
-            }).then(r => r.json()).then(d => {
-                if (d.success) location.reload();
-            });
         }
 
         function editTask(id) {

@@ -316,7 +316,7 @@
                     datasets: [{
                         label: 'Avancement %',
                         data: {!! json_encode($tasksProgress->pluck('progress')) !!},
-                        backgroundColor: {!! json_encode($tasksProgress->pluck('progress')->map(fn($v) => $v > 0 ? '#9333ea' : '#e5e7eb')) !!},
+                        backgroundColor: {!! json_encode($tasksProgress->map(fn($t) => $t['status'] === 'completed' ? '#10b981' : ($t['status'] === 'in_progress' ? '#9333ea' : '#e5e7eb'))) !!},
                         borderRadius: 4,
                     }]
                 },

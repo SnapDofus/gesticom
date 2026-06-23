@@ -58,7 +58,7 @@ class DashboardController extends Controller
 
         $tasksProgress = Task::where('user_id', $userId)
             ->orderBy('stage')
-            ->get(['name', 'progress']);
+            ->get(['name', 'progress', 'status']);
 
         $workers = Worker::with('payments')->where('user_id', $userId)->get()->map(function ($w) {
             return [
