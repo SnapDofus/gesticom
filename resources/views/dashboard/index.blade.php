@@ -112,7 +112,9 @@
         @if($workers->isNotEmpty())
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Calculateur paie ouvriers</h3>
-            <div class="overflow-x-auto">
+
+            {{-- Desktop table --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="text-left text-gray-500 border-b border-gray-100">
@@ -148,6 +150,38 @@
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+
+            {{-- Mobile cards --}}
+            <div class="md:hidden space-y-3" id="worker-calc-mobile">
+                @foreach($workers as $w)
+                <div class="border border-gray-100 rounded-xl p-3 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-gray-900">{{ $w['full_name'] }}</p>
+                            <p class="text-xs text-gray-500">{{ $w['function'] ?? '-' }}</p>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-900">{{ number_format($w['daily_wage'], 0, ',', ' ') }} FCFA/jour</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="text-xs text-gray-500 shrink-0">Jours :</label>
+                        <input type="number" min="0" value="0" class="worker-days flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center" data-wage="{{ $w['daily_wage'] }}" data-paid="{{ $w['total_paid'] }}" oninput="calcWorkerRow(this)">
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span>Total estimé : <strong class="worker-estimated text-gray-900">0 FCFA</strong></span>
+                        <span>Payé : <strong class="text-orange-600">{{ number_format($w['total_paid'], 0, ',', ' ') }} FCFA</strong></span>
+                    </div>
+                    <div class="text-sm font-semibold text-right">
+                        Reste : <span class="worker-remaining text-green-600">0 FCFA</span>
+                    </div>
+                </div>
+                @endforeach
+                <div class="border-t border-gray-200 pt-3 mt-3 space-y-1 text-sm font-semibold text-right">
+                    <p>Total jours : <span id="totalDays">0</span></p>
+                    <p>Total estimé : <span id="totalEstimated">0 FCFA</span></p>
+                    <p>Déjà payé : <span id="totalPaid">0 FCFA</span></p>
+                    <p>Reste : <span id="totalRemaining">0 FCFA</span></p>
+                </div>
             </div>
         </div>
         @endif

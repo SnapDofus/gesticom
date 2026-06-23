@@ -33,6 +33,7 @@
                             <td class="py-3">
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('workers.payments', $worker) }}" class="px-3 py-1.5 text-sm font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">Paiements</a>
+                                    <button onclick="quickPay({{ $worker->id }}, '{{ $worker->full_name }}', {{ $worker->daily_wage }})" class="px-3 py-1.5 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors">Payer</button>
                                     <button onclick="editWorker({{ $worker->id }})" class="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">Modifier</button>
                                     <form action="{{ route('workers.destroy', $worker) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cet ouvrier ?')">
                                         @csrf @method('DELETE')
@@ -60,6 +61,9 @@
                         <a href="{{ route('workers.payments', $worker) }}" class="w-9 h-9 flex items-center justify-center rounded-xl bg-purple-50 text-purple-600">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </a>
+                        <button onclick="quickPay({{ $worker->id }}, '{{ $worker->full_name }}', {{ $worker->daily_wage }})" class="w-9 h-9 flex items-center justify-center rounded-xl bg-green-50 text-green-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </button>
                         <button onclick="editWorker({{ $worker->id }})" class="w-9 h-9 flex items-center justify-center rounded-xl bg-purple-50 text-purple-600">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </button>
@@ -81,8 +85,9 @@
                         <p class="font-medium text-gray-900 mt-0.5">{{ number_format($worker->daily_wage, 0, ',', ' ') }} FCFA</p>
                     </div>
                 </div>
-                <div class="mt-2 pt-3 border-t border-gray-50">
+                <div class="mt-2 pt-3 border-t border-gray-50 flex items-center justify-between">
                     <p class="text-sm">Total payé : <span class="font-semibold text-purple-600">{{ number_format($worker->total_paid, 0, ',', ' ') }} FCFA</span></p>
+                    <button onclick="quickPay({{ $worker->id }}, '{{ $worker->full_name }}', {{ $worker->daily_wage }})" class="text-sm font-medium text-green-600 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg">Payer</button>
                 </div>
             </div>
             @empty
@@ -160,6 +165,44 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = '';
+        }
+
+        function quickPay(id, name, wage) {
+            Swal.fire({
+                title: 'Payer ' + name,
+                html: `<p class="text-sm text-gray-500 mb-3">Salaire journalier : <strong>${wage.toLocaleString()} FCFA</strong></p>
+                    <div class="space-y-2">
+                        <input type="number" id="pay-days" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg text-center font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Nombre de jours" min="1" value="1">
+                        <p class="text-sm text-gray-500">Total à payer : <strong id="pay-total">${wage.toLocaleString()} FCFA</strong></p>
+                    </div>`,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmer le paiement',
+                cancelButtonText: 'Annuler',
+                didOpen: () => {
+                    document.getElementById('pay-days').addEventListener('input', function() {
+                        const days = parseInt(this.value) || 0;
+                        document.getElementById('pay-total').textContent = (days * wage).toLocaleString() + ' FCFA';
+                    });
+                },
+                preConfirm: () => {
+                    const days = document.getElementById('pay-days').value;
+                    if (!days || parseInt(days) < 1) {
+                        Swal.showValidationMessage('Veuillez entrer un nombre de jours valide');
+                        return false;
+                    }
+                    return days;
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/workers/' + id + '/quick-pay';
+                    form.innerHTML = '<input name="_token" value="{{ csrf_token() }}">' +
+                                     '<input name="days" value="' + parseInt(result.value) + '">';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         }
 
         function editWorker(id) {

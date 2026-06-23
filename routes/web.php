@@ -48,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{worker}/payments', [WorkerPaymentController::class, 'index'])->name('payments');
         Route::post('/{worker}/payments', [WorkerPaymentController::class, 'store'])->name('payments.store');
         Route::delete('/{worker}/payments/{payment}', [WorkerPaymentController::class, 'destroy'])->name('payments.destroy');
+        Route::post('/{worker}/quick-pay', [WorkerController::class, 'quickPay'])->name('quick-pay');
     });
 
     Route::prefix('tasks')->name('tasks.')->group(function () {
