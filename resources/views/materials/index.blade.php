@@ -41,10 +41,7 @@
                                 <div class="flex items-center gap-2">
                                     <button onclick="editMaterial({{ $material->id }})" class="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">Modifier</button>
                                     @if($material->status !== 'fully_purchased')
-                                    <form action="{{ route('materials.purchased', $material) }}" method="POST" class="inline">
-                                        @csrf @method('PATCH')
-                                        <button type="submit" class="px-3 py-1.5 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors">Acheter</button>
-                                    </form>
+                                    <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }})" class="px-3 py-1.5 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors">Acheter</button>
                                     @endif
                                     <form action="{{ route('materials.destroy', $material) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce matériau ?')">
                                         @csrf @method('DELETE')
@@ -102,10 +99,7 @@
                     </div>
                 </div>
                 @if($material->status !== 'fully_purchased')
-                <form action="{{ route('materials.purchased', $material) }}" method="POST" class="mt-3">
-                    @csrf @method('PATCH')
-                    <button type="submit" class="mobile-btn-primary w-full">Marquer acheté</button>
-                </form>
+                <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }})" class="mobile-btn-primary w-full mt-3">Acheter</button>
                 @endif
             </div>
             @empty
@@ -237,6 +231,47 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = '';
+        }
+
+        function purchaseMaterial(id, name, planned, purchased) {
+            const remaining = planned - purchased;
+            if (remaining <= 0) {
+                Swal.fire('Déjà acheté', 'Ce matériau est déjà entièrement acheté.', 'info');
+                return;
+            }
+            Swal.fire({
+                title: 'Acheter ' + name,
+                html: `<p class="text-sm text-gray-500 mb-3">Restant à acheter : <strong>${remaining}</strong> sur <strong>${planned}</strong></p>
+                    <input type="number" id="purchase-qty" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg text-center font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500" value="${remaining}" min="0.01" max="${remaining}" step="0.01">`,
+                showCancelButton: true,
+                confirmButtonText: 'Valider l\'achat',
+                cancelButtonText: 'Annuler',
+                preConfirm: () => {
+                    const qty = document.getElementById('purchase-qty').value;
+                    if (!qty || parseFloat(qty) <= 0) {
+                        Swal.showValidationMessage('Veuillez entrer une quantité valide');
+                        return false;
+                    }
+                    if (parseFloat(qty) > remaining) {
+                        Swal.showValidationMessage('La quantité ne peut pas dépasser ' + remaining);
+                        return false;
+                    }
+                    return qty;
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/materials/' + id + '/purchased', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ quantity: result.value })
+                    }).then(() => {
+                        window.location.href = '/materials';
+                    });
+                }
+            });
         }
 
         function editMaterial(id) {

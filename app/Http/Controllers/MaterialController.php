@@ -73,17 +73,30 @@ class MaterialController extends Controller
         return redirect()->route('materials.index')->with('success', 'Matériau supprimé avec succès.');
     }
 
-    public function markAsPurchased(Material $material)
+    public function markAsPurchased(Request $request, Material $material)
     {
         $this->authorize('update', $material);
 
+        $request->validate([
+            'quantity' => 'required|numeric|min:0.01',
+        ]);
+
+        $qtyPurchased = $request->quantity;
+        $newTotal = $material->quantity_purchased + $qtyPurchased;
+
+        if ($newTotal >= $material->quantity_planned) {
+            $status = 'fully_purchased';
+        } else {
+            $status = 'partially_purchased';
+        }
+
         $material->update([
-            'quantity_purchased' => $material->quantity_planned,
-            'status' => 'fully_purchased',
+            'quantity_purchased' => $newTotal,
+            'status' => $status,
             'purchase_date' => now()->toDateString(),
         ]);
 
-        return redirect()->route('materials.index')->with('success', 'Matériau marqué comme complètement acheté.');
+        return redirect()->route('materials.index')->with('success', "Achat de {$qtyPurchased} {$material->name} enregistré.");
     }
 
     public function stats()
