@@ -89,6 +89,30 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', 'Avancement mis à jour.');
     }
 
+    public function updateStatus(Request $request, Task $task)
+    {
+        $this->authorize('update', $task);
+
+        $request->validate(['status' => 'required|in:not_started,in_progress,completed']);
+
+        $data = ['status' => $request->status];
+
+        if ($request->status === 'completed') {
+            $data['actual_end_date'] = now()->toDateString();
+            $data['progress'] = 100;
+            $this->notifyTaskCompleted($task);
+        } elseif ($request->status === 'in_progress' && $task->status === 'not_started') {
+            $data['start_date'] = now()->toDateString();
+            $data['progress'] = 25;
+        } elseif ($request->status === 'not_started') {
+            $data['progress'] = 0;
+        }
+
+        $task->update($data);
+
+        return redirect()->route('tasks.index')->with('success', 'Statut de la tâche mis à jour.');
+    }
+
     private function notifyTaskCompleted($task)
     {
         NotificationController::create([

@@ -113,7 +113,20 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fonction</label>
-                        <input type="text" name="function" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <select name="function" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Sélectionner une fonction</option>
+                            <option value="Maçon">Maçon</option>
+                            <option value="Ferrailleur">Ferrailleur</option>
+                            <option value="Coffreur">Coffreur</option>
+                            <option value="Électricien">Électricien</option>
+                            <option value="Plombier">Plombier</option>
+                            <option value="Carreleur">Carreleur</option>
+                            <option value="Peintre">Peintre</option>
+                            <option value="Menuisier">Menuisier</option>
+                            <option value="Charpentier">Charpentier</option>
+                            <option value="Manceuvre">Manceuvre</option>
+                            <option value="Autre">Autre</option>
+                        </select>
                     </div>
                 </div>
                 <div>
@@ -153,6 +166,9 @@
             fetch(`/workers/${id}/edit`)
                 .then(r => r.json())
                 .then(d => {
+                    const functions = ['Maçon','Ferrailleur','Coffreur','Électricien','Plombier','Carreleur','Peintre','Menuisier','Charpentier','Manceuvre','Autre'];
+                    let fnOpts = '<option value="">Sélectionner</option>';
+                    functions.forEach(f => fnOpts += `<option value="${f}" ${d.function===f?'selected':''}>${f}</option>`);
                     Swal.fire({
                         title: 'Modifier l\'ouvrier',
                         html: `<form id="editWorkerForm" action="/workers/${id}" method="POST">
@@ -161,7 +177,7 @@
                             <div class="text-left space-y-3">
                                 <div><label class="block text-sm font-medium">Nom complet</label><input type="text" name="full_name" value="${d.full_name}" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
                                 <div><label class="block text-sm font-medium">Téléphone</label><input type="text" name="phone" value="${d.phone || ''}" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
-                                <div><label class="block text-sm font-medium">Fonction</label><input type="text" name="function" value="${d.function || ''}" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+                                <div><label class="block text-sm font-medium">Fonction</label><select name="function" class="w-full border rounded-lg px-3 py-2 text-sm">${fnOpts}</select></div>
                                 <div><label class="block text-sm font-medium">Salaire journalier</label><input type="number" step="0.01" name="daily_wage" value="${d.daily_wage}" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
                             </div></form>`,
                         showCancelButton: true,

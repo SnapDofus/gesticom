@@ -109,6 +109,49 @@
             <canvas id="progressChart" height="120"></canvas>
         </div>
 
+        @if($workers->isNotEmpty())
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Calculateur paie ouvriers</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-gray-500 border-b border-gray-100">
+                            <th class="pb-2 font-medium">Ouvrier</th>
+                            <th class="pb-2 font-medium">Fonction</th>
+                            <th class="pb-2 font-medium">Tarif/jour</th>
+                            <th class="pb-2 font-medium">Jours</th>
+                            <th class="pb-2 font-medium">Total estimé</th>
+                            <th class="pb-2 font-medium">Déjà payé</th>
+                            <th class="pb-2 font-medium">Reste</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($workers as $w)
+                        <tr class="border-b border-gray-50">
+                            <td class="py-2 font-medium text-gray-900">{{ $w['full_name'] }}</td>
+                            <td class="py-2 text-gray-500">{{ $w['function'] ?? '-' }}</td>
+                            <td class="py-2">{{ number_format($w['daily_wage'], 0, ',', ' ') }} FCFA</td>
+                            <td class="py-2"><input type="number" min="0" value="0" class="worker-days" data-wage="{{ $w['daily_wage'] }}" data-paid="{{ $w['total_paid'] }}" style="width:70px" oninput="calcWorkerRow(this)"></td>
+                            <td class="py-2 font-medium worker-estimated">0 FCFA</td>
+                            <td class="py-2 text-orange-600">{{ number_format($w['total_paid'], 0, ',', ' ') }} FCFA</td>
+                            <td class="py-2 font-semibold worker-remaining text-green-600">0 FCFA</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t border-gray-200 font-semibold text-gray-900">
+                            <td class="pt-3" colspan="3">Total général</td>
+                            <td class="pt-3" id="totalDays">0</td>
+                            <td class="pt-3" id="totalEstimated">0 FCFA</td>
+                            <td class="pt-3" id="totalPaid">0 FCFA</td>
+                            <td class="pt-3" id="totalRemaining">0 FCFA</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Dernières dépenses</h3>
@@ -151,6 +194,31 @@
 
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function calcWorkerRow(input) {
+            const days = parseInt(input.value) || 0;
+            const wage = parseFloat(input.dataset.wage);
+            const paid = parseFloat(input.dataset.paid);
+            const estimated = days * wage;
+            const remaining = Math.max(0, estimated - paid);
+            const row = input.closest('tr');
+            row.querySelector('.worker-estimated').textContent = estimated.toLocaleString() + ' FCFA';
+            row.querySelector('.worker-remaining').textContent = remaining.toLocaleString() + ' FCFA';
+            row.querySelector('.worker-remaining').className = 'py-2 font-semibold worker-remaining ' + (remaining > 0 ? 'text-orange-600' : 'text-green-600');
+            let totDays = 0, totEst = 0, totPaid = 0, totRem = 0;
+            document.querySelectorAll('.worker-days').forEach(inp => {
+                const d = parseInt(inp.value) || 0;
+                totDays += d;
+                totEst += d * parseFloat(inp.dataset.wage);
+                totPaid += parseFloat(inp.dataset.paid);
+            });
+            totRem = Math.max(0, totEst - totPaid);
+            document.getElementById('totalDays').textContent = totDays;
+            document.getElementById('totalEstimated').textContent = totEst.toLocaleString() + ' FCFA';
+            document.getElementById('totalPaid').textContent = totPaid.toLocaleString() + ' FCFA';
+            document.getElementById('totalRemaining').textContent = totRem.toLocaleString() + ' FCFA';
+        }
+    </script>
     <script>
         const colors = {
             purple: '#9333ea',
@@ -206,29 +274,29 @@
         });
         @endif
 
-        @if($tasksProgress->isNotEmpty())
-        new Chart(document.getElementById('progressChart'), {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($tasksProgress->pluck('name')) !!},
-                datasets: [{
-                    label: 'Avancement %',
-                    data: {!! json_encode($tasksProgress->pluck('progress')) !!},
-                    backgroundColor: colors.purple,
-                    borderRadius: 4,
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { min: 0, max: 100 },
-                    y: { ticks: { font: { size: 11 } } }
+        if (document.getElementById('progressChart')) {
+            new Chart(document.getElementById('progressChart'), {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($tasksProgress->pluck('name')) !!},
+                    datasets: [{
+                        label: 'Avancement %',
+                        data: {!! json_encode($tasksProgress->pluck('progress')) !!},
+                        backgroundColor: {!! json_encode($tasksProgress->pluck('progress')->map(fn($v) => $v > 0 ? '#9333ea' : '#e5e7eb')) !!},
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { min: 0, max: 100, ticks: { stepSize: 20 } },
+                        y: { ticks: { font: { size: 11 } } }
+                    }
                 }
-            }
-        });
-        @endif
+            });
+        }
     </script>
     @endpush
 </x-app-layout>

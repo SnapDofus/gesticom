@@ -57,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{task}', [TaskController::class, 'update'])->name('update');
         Route::delete('/{task}', [TaskController::class, 'destroy'])->name('destroy');
         Route::patch('/{task}/progress', [TaskController::class, 'updateProgress'])->name('progress');
+        Route::patch('/{task}/status', [TaskController::class, 'updateStatus'])->name('status');
     });
 
     Route::prefix('photos')->name('photos.')->group(function () {

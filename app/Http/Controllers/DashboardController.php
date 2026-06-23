@@ -60,6 +60,16 @@ class DashboardController extends Controller
             ->orderBy('stage')
             ->get(['name', 'progress']);
 
+        $workers = Worker::with('payments')->where('user_id', $userId)->get()->map(function ($w) {
+            return [
+                'id' => $w->id,
+                'full_name' => $w->full_name,
+                'function' => $w->function,
+                'daily_wage' => $w->daily_wage,
+                'total_paid' => $w->total_paid,
+            ];
+        });
+
         return view('dashboard.index', compact(
             'stats',
             'recentExpenses',
@@ -68,7 +78,8 @@ class DashboardController extends Controller
             'recentPhotos',
             'expensesByMonth',
             'expensesByCategory',
-            'tasksProgress'
+            'tasksProgress',
+            'workers'
         ));
     }
 }
