@@ -10,6 +10,7 @@ use App\Models\Budget;
 use App\Models\ProjectPhoto;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -40,8 +41,12 @@ class DashboardController extends Controller
         $recentTasks = Task::where('user_id', $userId)->latest()->take(5)->get();
         $recentPhotos = ProjectPhoto::where('user_id', $userId)->latest()->take(5)->get();
 
+        $dateField = DB::getDriverName() === 'mysql'
+            ? "DATE_FORMAT(date, '%Y-%m')"
+            : "strftime('%Y-%m', date)";
+
         $expensesByMonth = Expense::where('user_id', $userId)
-            ->selectRaw("strftime('%Y-%m', date) as month, SUM(amount) as total")
+            ->selectRaw("$dateField as month, SUM(amount) as total")
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month');
