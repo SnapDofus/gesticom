@@ -154,6 +154,7 @@
     @push('scripts')
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.tailwindcss.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script>
         function openModal(id) {
             const modal = document.getElementById(id);
@@ -236,7 +237,8 @@
             $(document).ready(function() {
                 $('#workers-table').DataTable({
                     language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
-                    pageLength: 25
+                    pageLength: 25,
+                    responsive: true
                 });
             });
         }

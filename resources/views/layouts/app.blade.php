@@ -12,10 +12,12 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.css">
     @stack('styles')
     <style>
         .dataTables_empty { text-align: center !important; padding: 2rem 0 !important; color: #9ca3af; font-style: italic; }
         .dataTables_length select { min-width: 60px; padding: 2px 4px; }
+        table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before { top: 50%; transform: translateY(-50%); }
     </style>
 </head>
 <body class="font-sans antialiased bg-gray-50">
