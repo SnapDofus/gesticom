@@ -11,7 +11,12 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900">Budget global</h3>
-                <span class="text-2xl font-bold text-purple-600">{{ number_format($global->planned_amount, 0, ',', ' ') }} FCFA</span>
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-bold text-purple-600">{{ number_format($global->planned_amount, 0, ',', ' ') }} FCFA</span>
+                    <button onclick="editBudget({{ $global->id }}, '{{ $global->planned_amount }}', 'Budget global')" class="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                </div>
             </div>
             <div class="grid grid-cols-3 gap-4 mb-4">
                 <div>
@@ -20,7 +25,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Restant</p>
-                    <p class="text-lg font-semibold text-{{ $global->is_over_budget ? 'red' : 'green' }}-600">{{ number_format($global->remaining, 0, ',', ' ') }} FCFA</p>
+                    <p class="text-lg font-semibold {{ $global->is_over_budget ? 'text-red-600' : 'text-green-600' }}">{{ number_format($global->remaining, 0, ',', ' ') }} FCFA</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Utilisation</p>
@@ -28,7 +33,7 @@
                 </div>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-3">
-                <div class="bg-{{ $global->is_over_budget ? 'red' : 'purple' }}-600 h-3 rounded-full transition-all" style="width: {{ min(100, $global->progress_percentage) }}%"></div>
+                <div class="h-3 rounded-full transition-all {{ $global->is_over_budget ? 'bg-red-600' : 'bg-purple-600' }}" style="width: {{ min(100, $global->progress_percentage) }}%"></div>
             </div>
             @if($global->is_over_budget)
                 <div class="mt-3 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
@@ -43,14 +48,19 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="font-semibold text-gray-900">{{ $categoryLabels[$budget->category] ?? $budget->category }}</h4>
-                    <span class="text-sm font-medium text-gray-700">{{ number_format($budget->planned_amount, 0, ',', ' ') }} FCFA</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-gray-700">{{ number_format($budget->planned_amount, 0, ',', ' ') }} FCFA</span>
+                        <button onclick="editBudget({{ $budget->id }}, '{{ $budget->planned_amount }}', '{{ $categoryLabels[$budget->category] ?? $budget->category }}')" class="p-1 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="flex items-center justify-between text-sm mb-2">
                     <span class="text-gray-500">Dépensé : <strong class="text-gray-900">{{ number_format($budget->spent_amount, 0, ',', ' ') }} FCFA</strong></span>
-                    <span class="text-{{ $budget->is_over_budget ? 'red' : 'gray' }}-500">{{ $budget->progress_percentage }}%</span>
+                    <span class="{{ $budget->is_over_budget ? 'text-red-500' : 'text-gray-500' }}">{{ $budget->progress_percentage }}%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-{{ $budget->is_over_budget ? 'red' : 'purple' }}-500 h-2 rounded-full" style="width: {{ min(100, $budget->progress_percentage) }}%"></div>
+                    <div class="h-2 rounded-full {{ $budget->is_over_budget ? 'bg-red-500' : 'bg-purple-500' }}" style="width: {{ min(100, $budget->progress_percentage) }}%"></div>
                 </div>
                 @if($budget->is_over_budget)
                     <p class="text-xs text-red-600 mt-2">Dépassé de {{ number_format($budget->spent_amount - $budget->planned_amount, 0, ',', ' ') }} FCFA</p>
@@ -61,4 +71,36 @@
             @endforeach
         </div>
     </div>
+    @push('scripts')
+    <script>
+        function editBudget(id, amount, label) {
+            Swal.fire({
+                title: 'Modifier ' + label,
+                html: `<input type="number" id="edit-budget-amount" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg text-center font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500" value="${amount}" min="0" step="1000">`,
+                showCancelButton: true,
+                confirmButtonText: 'Enregistrer',
+                cancelButtonText: 'Annuler',
+                preConfirm: () => {
+                    const val = document.getElementById('edit-budget-amount').value;
+                    if (!val || parseFloat(val) < 0) {
+                        Swal.showValidationMessage('Veuillez entrer un montant valide');
+                        return false;
+                    }
+                    return val;
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/budgets/' + id;
+                    form.innerHTML = '<input name="_token" value="{{ csrf_token() }}">' +
+                                     '<input name="_method" value="PUT">' +
+                                     '<input name="planned_amount" value="' + parseFloat(result.value) + '">';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+    @endpush
 </x-app-layout>
