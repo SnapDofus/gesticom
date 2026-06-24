@@ -12,6 +12,9 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    <style>
+        .dataTables_empty { text-align: center !important; padding: 2rem 0 !important; color: #9ca3af; font-style: italic; }
+    </style>
 </head>
 <body class="font-sans antialiased bg-gray-50">
     <div class="min-h-screen">
