@@ -304,9 +304,8 @@
         if (window.innerWidth >= 768) {
             $(document).ready(function() {
                 $('#materials-table').DataTable({
-                    language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
+                    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
                     pageLength: 25,
-                    lengthChange: false,
                     order: [[0, 'asc']]
                 });
             });

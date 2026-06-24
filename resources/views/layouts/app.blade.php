@@ -11,9 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css">
     @stack('styles')
     <style>
         .dataTables_empty { text-align: center !important; padding: 2rem 0 !important; color: #9ca3af; font-style: italic; }
+        .dataTables_length select { min-width: 60px; padding: 2px 4px; }
     </style>
 </head>
 <body class="font-sans antialiased bg-gray-50">
