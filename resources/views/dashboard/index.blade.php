@@ -269,71 +269,105 @@
         }
     </script>
     <script>
-        const purple = '#9333ea', blue = '#3b82f6', green = '#10b981', orange = '#f59e0b', teal = '#14b8a6';
+        am4core.useTheme(am4themes_animated);
 
         @if($expensesByMonth->isNotEmpty())
-        new ApexCharts(document.getElementById('expensesChart'), {
-            chart: { type: 'area', height: 250, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-            series: [{
-                name: 'Dépenses',
-                data: {!! json_encode($expensesByMonth->values()) !!}
-            }],
-            xaxis: {
-                categories: {!! json_encode($expensesByMonth->keys()) !!},
-                labels: { style: { colors: '#6b7280', fontSize: '12px' } }
-            },
-            yaxis: {
-                labels: {
-                    formatter: v => v.toLocaleString() + ' FCFA',
-                    style: { colors: '#6b7280', fontSize: '12px' }
-                }
-            },
-            stroke: { curve: 'smooth', width: 2, colors: [purple] },
-            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0 } },
-            colors: [purple],
-            dataLabels: { enabled: false },
-            grid: { borderColor: '#f3f4f6' },
-            tooltip: { y: { formatter: v => v.toLocaleString() + ' FCFA' } }
-        }).render();
+        (function() {
+            var chart = am4core.create('expensesChart', am4charts.XYChart);
+            chart.data = {!! json_encode($expensesByMonth->map(fn($v, $k) => ['month' => $k, 'total' => $v])->values()) !!};
+            var dateAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            dateAxis.dataFields.category = 'month';
+            dateAxis.renderer.labels.template.fill = am4core.color('#6b7280');
+            dateAxis.renderer.grid.template.strokeOpacity = 0.3;
+            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            valueAxis.renderer.labels.template.fill = am4core.color('#6b7280');
+            valueAxis.renderer.labels.template.adapter.add('text', function(text) {
+                return Number(text).toLocaleString() + ' FCFA';
+            });
+            valueAxis.renderer.grid.template.strokeOpacity = 0.3;
+            var series = chart.series.push(new am4charts.LineSeries());
+            series.dataFields.valueY = 'total';
+            series.dataFields.categoryX = 'month';
+            series.strokeWidth = 2;
+            series.stroke = am4core.color('#9333ea');
+            series.fill = am4core.color('#9333ea');
+            series.fillOpacity = 0.1;
+            series.tensionX = 0.8;
+            series.tooltipText = "{valueY} FCFA";
+            series.tooltip.background.cornerRadius = 8;
+            series.tooltip.background.strokeOpacity = 0;
+            var bullet = series.bullets.push(new am4charts.CircleBullet());
+            bullet.circle.strokeWidth = 2;
+            bullet.circle.radius = 4;
+            bullet.circle.fill = am4core.color('#fff');
+            bullet.circle.stroke = am4core.color('#9333ea');
+            chart.cursor = new am4charts.XYCursor();
+            chart.cursor.behavior = 'none';
+            chart.padding(0, 10, 0, 0);
+        })();
         @endif
 
         @if($expensesByCategory->isNotEmpty())
-        const catColors = { materials: blue, labor: orange, transport: teal, misc: purple };
-        const catLabels = { materials: 'Matériaux', labor: 'Main d\'œuvre', transport: 'Transport', misc: 'Divers' };
-        new ApexCharts(document.getElementById('categoryChart'), {
-            chart: { type: 'donut', height: 280, fontFamily: 'Inter, sans-serif' },
-            series: {!! json_encode($expensesByCategory->values()) !!},
-            labels: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catLabels[$k] ?? $k)) !!},
-            colors: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catColors[$k] ?? '#6b7280')) !!},
-            dataLabels: { enabled: false },
-            legend: { position: 'bottom', fontSize: '13px', labels: { colors: '#374151' } },
-            plotOptions: {
-                pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', formatter: () => {!! json_encode(number_format($expensesByCategory->sum(), 0, ',', ' '))!!} + ' FCFA' } } } }
-            },
-            stroke: { show: false },
-            tooltip: { y: { formatter: v => v.toLocaleString() + ' FCFA' } }
-        }).render();
+        (function() {
+            var colors = {'materials':'#3b82f6','labor':'#f59e0b','transport':'#14b8a6','misc':'#9333ea'};
+            var labels = {'materials':'Matériaux','labor':'Main d\'œuvre','transport':'Transport','misc':'Divers'};
+            var chart = am4core.create('categoryChart', am4charts.PieChart);
+            chart.data = {!! json_encode($expensesByCategory->map(fn($v, $k) => ['category' => $labels[$k] ?? $k, 'value' => $v, 'color' => $colors[$k] ?? '#6b7280'])->values()) !!};
+            chart.innerRadius = am4core.percent(55);
+            var series = chart.series.push(new am4charts.PieSeries());
+            series.dataFields.value = 'value';
+            series.dataFields.category = 'category';
+            series.slices.template.propertyFields.fill = 'color';
+            series.slices.template.stroke = am4core.color('#fff');
+            series.slices.template.strokeWidth = 2;
+            series.slices.template.strokeOpacity = 1;
+            series.labels.template.fill = am4core.color('#374151');
+            series.labels.template.fontSize = 12;
+            series.labels.template.disabled = true;
+            series.ticks.template.disabled = true;
+            var legend = new am4charts.Legend();
+            legend.position = 'bottom';
+            legend.labels.template.fill = am4core.color('#374151');
+            legend.labels.template.fontSize = 13;
+            legend.marginTop = 10;
+            chart.legend = legend;
+            series.hiddenState.properties.opacity = 1;
+            series.hiddenState.properties.endAngle = -90;
+            series.hiddenState.properties.startAngle = -90;
+        })();
         @endif
 
-        new ApexCharts(document.getElementById('progressChart'), {
-            chart: { type: 'bar', height: 250, fontFamily: 'Inter, sans-serif', toolbar: { show: false } },
-            series: [{
-                name: 'Avancement %',
-                data: {!! json_encode($tasksProgress->pluck('progress')) !!}
-            }],
-            xaxis: {
-                categories: {!! json_encode($tasksProgress->pluck('name')) !!},
-                labels: { style: { colors: '#6b7280', fontSize: '11px' } }
-            },
-            yaxis: { max: 100, labels: { style: { colors: '#6b7280', fontSize: '12px' } } },
-            colors: {!! json_encode($tasksProgress->map(fn($t) => $t['status'] === 'completed' ? green : ($t['status'] === 'in_progress' ? purple : '#e5e7eb'))) !!},
-            plotOptions: {
-                bar: { borderRadius: 4, horizontal: true, distributed: true }
-            },
-            dataLabels: { enabled: true, formatter: v => v + '%', style: { colors: ['#1f2937'], fontSize: '11px', fontWeight: 600 } },
-            grid: { borderColor: '#f3f4f6' },
-            tooltip: { y: { formatter: v => v + '%' } }
-        }).render();
+        (function() {
+            var chart = am4core.create('progressChart', am4charts.XYChart);
+            chart.data = {!! json_encode($tasksProgress->map(fn($t) => ['name' => $t->name, 'progress' => $t->progress, 'status' => $t->status])->values()) !!};
+            chart.padding(0, 20, 0, 0);
+            var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.dataFields.category = 'name';
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.renderer.labels.template.fill = am4core.color('#374151');
+            categoryAxis.renderer.labels.template.fontSize = 11;
+            categoryAxis.renderer.grid.template.strokeOpacity = 0.2;
+            categoryAxis.renderer.inversed = true;
+            var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+            valueAxis.min = 0;
+            valueAxis.max = 100;
+            valueAxis.renderer.labels.template.fill = am4core.color('#6b7280');
+            valueAxis.renderer.grid.template.strokeOpacity = 0.2;
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.valueX = 'progress';
+            series.dataFields.categoryY = 'name';
+            series.columns.template.tooltipText = '{categoryY}: {valueX}%';
+            series.columns.template.column.cornerRadiusTopLeft = 4;
+            series.columns.template.column.cornerRadiusBottomLeft = 4;
+            series.columns.template.strokeWidth = 0;
+            series.columns.template.adapter.add('fill', function(fill, target) {
+                if (!target.dataItem) return fill;
+                var status = target.dataItem.dataContext.status;
+                return am4core.color(status === 'completed' ? '#10b981' : (status === 'in_progress' ? '#9333ea' : '#e5e7eb'));
+            });
+            chart.cursor = new am4charts.XYCursor();
+            chart.cursor.behavior = 'none';
+        })();
     </script>
     @endpush
 </x-app-layout>

@@ -12,7 +12,9 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/otika.css') }}">
-    <script src="{{ asset('js/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('js/amcharts/core.js') }}"></script>
+    <script src="{{ asset('js/amcharts/charts.js') }}"></script>
+    <script src="{{ asset('js/amcharts/animated.js') }}"></script>
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-gray-50">
