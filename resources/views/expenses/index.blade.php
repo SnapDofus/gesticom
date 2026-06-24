@@ -200,6 +200,7 @@
                 $('#expenses-table').DataTable({
                     language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
                     pageLength: 25,
+                    lengthChange: false,
                     order: [[3, 'desc']]
                 });
             });
