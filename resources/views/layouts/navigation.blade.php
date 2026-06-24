@@ -57,12 +57,12 @@
                 </a>
 
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="flex items-center space-x-2 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <button @click.stop="open = !open" class="flex items-center space-x-2 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                         <div class="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-medium">
                             {{ substr(Auth::user()->name, 0, 2) }}
                         </div>
                     </button>
-                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50" x-cloak>
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profil</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

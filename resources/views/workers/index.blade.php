@@ -120,6 +120,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fonction</label>
                         <select name="function" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">Sélectionner une fonction</option>
+                            <option value="Chef de chantier">Chef de chantier</option>
                             <option value="Maçon">Maçon</option>
                             <option value="Ferrailleur">Ferrailleur</option>
                             <option value="Coffreur">Coffreur</option>
@@ -209,7 +210,7 @@
             fetch(`/workers/${id}/edit`)
                 .then(r => r.json())
                 .then(d => {
-                    const functions = ['Maçon','Ferrailleur','Coffreur','Électricien','Plombier','Carreleur','Peintre','Menuisier','Charpentier','Manceuvre','Autre'];
+                    const functions = ['Chef de chantier','Maçon','Ferrailleur','Coffreur','Électricien','Plombier','Carreleur','Peintre','Menuisier','Charpentier','Manceuvre','Autre'];
                     let fnOpts = '<option value="">Sélectionner</option>';
                     functions.forEach(f => fnOpts += `<option value="${f}" ${d.function===f?'selected':''}>${f}</option>`);
                     Swal.fire({

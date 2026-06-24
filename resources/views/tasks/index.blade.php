@@ -35,19 +35,16 @@
                         <form action="{{ route('tasks.status', $task) }}" method="POST">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="in_progress">
-                            <button type="submit" class="text-xs px-3 py-1.5 font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg whitespace-nowrap">Commencer</button>
+                            <button type="submit" class="text-xs px-2.5 py-1.5 font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg whitespace-nowrap">Commencer</button>
                         </form>
                         @endif
                         @if($task->status === 'in_progress')
                         <form action="{{ route('tasks.status', $task) }}" method="POST">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="completed">
-                            <button type="submit" class="text-xs px-3 py-1.5 font-medium text-green-600 bg-green-50 hover:bg-green-100 rounded-lg whitespace-nowrap">Terminer</button>
+                            <button type="submit" class="text-xs px-2.5 py-1.5 font-medium text-green-600 bg-green-50 hover:bg-green-100 rounded-lg whitespace-nowrap">Terminer</button>
                         </form>
                         @endif
-                        <span class="px-2.5 py-1 text-xs font-medium rounded-full whitespace-nowrap {{ $statusColors[$task->status] ?? 'bg-gray-100' }}">
-                            {{ $statusLabels[$task->status] ?? $task->status }}
-                        </span>
                         <button onclick="editTask({{ $task->id }})" class="w-9 h-9 flex items-center justify-center rounded-xl bg-purple-50 text-purple-600">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </button>
@@ -62,13 +59,19 @@
                 @if($task->description)
                 <p class="mt-2 text-sm text-gray-500">{{ $task->description }}</p>
                 @endif
-                <div class="mt-3 flex items-center gap-3">
-                    <span class="text-sm font-semibold text-gray-700 shrink-0">{{ $task->progress }}%</span>
-                    <div class="flex-1 bg-gray-200 rounded-full h-2.5">
-                        <div class="h-2.5 rounded-full transition-all duration-300
-                            {{ $task->status === 'completed' ? 'bg-green-500' : ($task->status === 'in_progress' ? 'bg-purple-600' : 'bg-gray-300') }}"
-                            style="width: {{ $task->progress }}%">
+                <div class="mt-3 flex items-center gap-3 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-semibold text-gray-700 min-w-[2.5rem]">{{ $task->progress }}%</span>
+                        <div class="w-20 sm:w-24 bg-gray-200 rounded-full h-2.5">
+                            <div class="h-2.5 rounded-full transition-all
+                                {{ $task->status === 'completed' ? 'bg-green-500' : ($task->status === 'in_progress' ? 'bg-purple-600' : 'bg-gray-300') }}"
+                                style="width: {{ $task->progress }}%">
+                            </div>
                         </div>
+                    </div>
+                    <span class="px-2.5 py-1 text-xs font-medium rounded-full {{ $statusColors[$task->status] ?? 'bg-gray-100' }}">
+                        {{ $statusLabels[$task->status] ?? $task->status }}
+                    </span>
                     </div>
                 </div>
                 @if($task->status === 'in_progress')
