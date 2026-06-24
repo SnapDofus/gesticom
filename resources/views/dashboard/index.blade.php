@@ -96,11 +96,27 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Évolution des dépenses</h3>
-                <canvas id="expensesChart" height="200"></canvas>
+                @if($expensesByMonth->isNotEmpty())
+                    <canvas id="expensesChart" height="200"></canvas>
+                @else
+                    <div class="flex flex-col items-center justify-center py-10 text-gray-400">
+                        <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p class="text-sm">Aucune dépense enregistrée</p>
+                        <a href="{{ route('expenses.index') }}" class="text-purple-600 hover:underline text-sm mt-1">Ajouter une dépense</a>
+                    </div>
+                @endif
             </div>
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Répartition par catégorie</h3>
-                <canvas id="categoryChart" height="200"></canvas>
+                @if($expensesByCategory->isNotEmpty())
+                    <canvas id="categoryChart" height="200"></canvas>
+                @else
+                    <div class="flex flex-col items-center justify-center py-10 text-gray-400">
+                        <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+                        <p class="text-sm">Aucune dépense enregistrée</p>
+                        <a href="{{ route('expenses.index') }}" class="text-purple-600 hover:underline text-sm mt-1">Ajouter une dépense</a>
+                    </div>
+                @endif
             </div>
         </div>
 

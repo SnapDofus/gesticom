@@ -47,8 +47,8 @@ class DashboardController extends Controller
 
         $expensesByMonth = Expense::where('user_id', $userId)
             ->selectRaw("$dateField as month, SUM(amount) as total")
-            ->groupBy('month')
-            ->orderBy('month')
+            ->groupBy(DB::raw($dateField))
+            ->orderBy(DB::raw($dateField))
             ->pluck('total', 'month');
 
         $expensesByCategory = Expense::where('user_id', $userId)
