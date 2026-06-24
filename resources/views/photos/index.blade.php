@@ -22,6 +22,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
                 <div class="aspect-square bg-gray-100 relative overflow-hidden">
                     <img src="{{ Storage::url($photo->path) }}" alt="{{ $photo->original_name }}"
+                        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23e5e7eb%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%223%22 fill=%22%239ca3af%22>Image non disponible</text></svg>'"
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     <form action="{{ route('photos.destroy', $photo) }}" method="POST" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         @csrf @method('DELETE')
