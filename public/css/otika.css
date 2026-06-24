@@ -1,0 +1,115 @@
+/* ─── Otika-style Tables ─── */
+.otika-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.otika-table thead th {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+  border-bottom: 2px solid #e9ecef;
+  text-align: left;
+  white-space: nowrap;
+}
+.otika-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+  color: #34395e;
+}
+.otika-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.otika-table tbody tr:hover {
+  background-color: #f8f9fc;
+}
+.otika-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ─── Badges ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 30px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.badge-green { background: #e3fce8; color: #0d9b3e; }
+.badge-orange { background: #fff3e0; color: #e67e22; }
+.badge-gray { background: #f1f2f3; color: #6c757d; }
+.badge-blue { background: #e8f0fe; color: #1967d2; }
+.badge-purple { background: #f3e8ff; color: #7c3aed; }
+.badge-red { background: #fce8e6; color: #d93025; }
+
+/* ─── Action Buttons ─── */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: transparent;
+}
+.btn-action-blue { color: #1967d2; }
+.btn-action-blue:hover { background: #e8f0fe; }
+.btn-action-green { color: #0d9b3e; }
+.btn-action-green:hover { background: #e3fce8; }
+.btn-action-red { color: #d93025; }
+.btn-action-red:hover { background: #fce8e6; }
+
+/* ─── Card ─── */
+.otika-card {
+  background: #fff;
+  border-radius: 0.625rem;
+  box-shadow: 0 0.46875rem 2.1875rem rgba(90,97,105,0.1),
+              0 0.9375rem 1.40625rem rgba(90,97,105,0.1),
+              0 0.25rem 0.53125rem rgba(90,97,105,0.12),
+              0 0.125rem 0.1875rem rgba(90,97,105,0.1);
+  border: none;
+  overflow: hidden;
+}
+.otika-card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.otika-card-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #34395e;
+  margin: 0;
+}
+.otika-card-body {
+  padding: 1.5rem;
+}
+.otika-card-body.p-0 {
+  padding: 0;
+}
+
+/* ─── Section Title ─── */
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #34395e;
+  margin: 0 0 1rem 0;
+}
+
+/* ─── Responsive Table Wrapper ─── */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

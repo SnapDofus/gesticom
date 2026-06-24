@@ -9,42 +9,52 @@
         </div>
 
         {{-- Desktop table --}}
-        <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-4">
-                <table id="workers-table" class="w-full text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500 border-b border-gray-100">
-                            <th class="pb-3 font-medium">Nom complet</th>
-                            <th class="pb-3 font-medium">Téléphone</th>
-                            <th class="pb-3 font-medium">Fonction</th>
-                            <th class="pb-3 font-medium">Salaire/jour</th>
-                            <th class="pb-3 font-medium">Total payé</th>
-                            <th class="pb-3 font-medium">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($workers as $worker)
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="py-3 font-medium text-gray-900">{{ $worker->full_name }}</td>
-                            <td class="py-3">{{ $worker->phone ?? '-' }}</td>
-                            <td class="py-3">{{ $worker->function ?? '-' }}</td>
-                            <td class="py-3">{{ number_format($worker->daily_wage, 0, ',', ' ') }} FCFA</td>
-                            <td class="py-3 font-medium text-purple-600">{{ number_format($worker->total_paid, 0, ',', ' ') }} FCFA</td>
-                            <td class="py-3">
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('workers.payments', $worker) }}" class="px-3 py-1.5 text-sm font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">Paiements</a>
-                                    <button onclick="quickPay({{ $worker->id }}, '{{ $worker->full_name }}', {{ $worker->daily_wage }})" class="px-3 py-1.5 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors">Payer</button>
-                                    <button onclick="editWorker({{ $worker->id }})" class="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">Modifier</button>
-                                    <form action="{{ route('workers.destroy', $worker) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cet ouvrier ?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">Supprimer</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        <div class="hidden md:block otika-card">
+            <div class="otika-card-body p-0">
+                <div class="table-responsive">
+                    <table class="otika-table">
+                        <thead>
+                            <tr>
+                                <th>Nom complet</th>
+                                <th>Téléphone</th>
+                                <th>Fonction</th>
+                                <th>Salaire/jour</th>
+                                <th>Total payé</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($workers as $worker)
+                            <tr>
+                                <td><span class="font-medium text-gray-900">{{ $worker->full_name }}</span></td>
+                                <td>{{ $worker->phone ?? '-' }}</td>
+                                <td>{{ $worker->function ?? '-' }}</td>
+                                <td>{{ number_format($worker->daily_wage, 0, ',', ' ') }} FCFA</td>
+                                <td class="font-medium text-purple-600">{{ number_format($worker->total_paid, 0, ',', ' ') }} FCFA</td>
+                                <td class="text-right">
+                                    <div class="flex items-center justify-end gap-1">
+                                        <a href="{{ route('workers.payments', $worker) }}" class="btn-action btn-action-blue">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        </a>
+                                        <button onclick="quickPay({{ $worker->id }}, '{{ $worker->full_name }}', {{ $worker->daily_wage }})" class="btn-action btn-action-green">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                        </button>
+                                        <button onclick="editWorker({{ $worker->id }})" class="btn-action btn-action-blue">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        </button>
+                                        <form action="{{ route('workers.destroy', $worker) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cet ouvrier ?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn-action btn-action-red">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -147,14 +157,7 @@
         </div>
     </div>
 
-    @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.tailwindcss.min.css">
-    @endpush
-
     @push('scripts')
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.tailwindcss.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script>
         function openModal(id) {
             const modal = document.getElementById(id);
@@ -233,15 +236,6 @@
                 });
         }
 
-        if (window.innerWidth >= 768) {
-            $(document).ready(function() {
-                $('#workers-table').DataTable({
-                    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
-                    pageLength: 25,
-                    responsive: true
-                });
-            });
-        }
     </script>
     @endpush
 </x-app-layout>

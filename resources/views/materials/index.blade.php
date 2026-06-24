@@ -9,45 +9,51 @@
         </div>
 
         {{-- Desktop table --}}
-        <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-4">
-                <table id="materials-table" class="w-full text-sm">
+        <div class="hidden md:block otika-card">
+            <div class="otika-card-body p-0">
+                <div class="table-responsive">
+                    <table class="otika-table">
                     <thead>
-                        <tr class="text-left text-gray-500 border-b border-gray-100">
-                            <th class="pb-3 font-medium">Matériau</th>
-                            <th class="pb-3 font-medium">Qté prévue</th>
-                            <th class="pb-3 font-medium">Qté achetée</th>
-                            <th class="pb-3 font-medium">Unité</th>
-                            <th class="pb-3 font-medium">Prix estimé</th>
-                            <th class="pb-3 font-medium">Prix réel</th>
-                            <th class="pb-3 font-medium">Statut</th>
-                            <th class="pb-3 font-medium">Actions</th>
+                        <tr>
+                            <th>Matériau</th>
+                            <th>Qté prévue</th>
+                            <th>Qté achetée</th>
+                            <th>Unité</th>
+                            <th>Prix estimé</th>
+                            <th>Prix réel</th>
+                            <th>Statut</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($materials as $material)
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="py-3 font-medium text-gray-900">{{ $material->name }}</td>
-                            <td class="py-3">{{ $material->quantity_planned }}</td>
-                            <td class="py-3">{{ $material->quantity_purchased }}</td>
-                            <td class="py-3 text-gray-500">{{ $material->unit ?? '-' }}</td>
-                            <td class="py-3">{{ number_format($material->estimated_price, 0, ',', ' ') }} FCFA</td>
-                            <td class="py-3">{{ $material->actual_price ? number_format($material->actual_price, 0, ',', ' ') . ' FCFA' : '-' }}</td>
-                            <td class="py-3">
-                                <span class="px-2 py-1 text-xs font-medium rounded-full
-                                    {{ $material->status === 'fully_purchased' ? 'bg-green-100 text-green-700' : ($material->status === 'partially_purchased' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600') }}">
+                        <tr>
+                            <td><span class="font-medium text-gray-900">{{ $material->name }}</span></td>
+                            <td>{{ $material->quantity_planned }}</td>
+                            <td>{{ $material->quantity_purchased }}</td>
+                            <td><span class="text-gray-500">{{ $material->unit ?? '-' }}</span></td>
+                            <td>{{ number_format($material->estimated_price, 0, ',', ' ') }} FCFA</td>
+                            <td>{{ $material->actual_price ? number_format($material->actual_price, 0, ',', ' ') . ' FCFA' : '-' }}</td>
+                            <td>
+                                <span class="badge {{ $material->status === 'fully_purchased' ? 'badge-green' : ($material->status === 'partially_purchased' ? 'badge-orange' : 'badge-gray') }}">
                                     {{ $material->status === 'fully_purchased' ? 'Acheté' : ($material->status === 'partially_purchased' ? 'Partiel' : 'Non acheté') }}
                                 </span>
                             </td>
-                            <td class="py-3">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="editMaterial({{ $material->id }})" class="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">Modifier</button>
+                            <td class="text-right">
+                                <div class="flex items-center justify-end gap-1">
+                                    <button onclick="editMaterial({{ $material->id }})" class="btn-action btn-action-blue">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    </button>
                                     @if($material->status !== 'fully_purchased')
-                                    <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }}, '{{ $material->unit }}')" class="px-3 py-1.5 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors">Acheter</button>
+                                    <button onclick="purchaseMaterial({{ $material->id }}, '{{ $material->name }}', {{ $material->quantity_planned }}, {{ $material->quantity_purchased }}, '{{ $material->unit }}')" class="btn-action btn-action-green">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+                                    </button>
                                     @endif
                                     <form action="{{ route('materials.destroy', $material) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce matériau ?')">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">Supprimer</button>
+                                        <button type="submit" class="btn-action btn-action-red">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
                                     </form>
                                 </div>
                             </td>
@@ -55,6 +61,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 
@@ -222,14 +229,7 @@
         </div>
     </div>
 
-    @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.tailwindcss.min.css">
-    @endpush
-
     @push('scripts')
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.tailwindcss.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script>
         function openModal(id) {
             const modal = document.getElementById(id);
@@ -302,16 +302,6 @@
                 });
         }
 
-        if (window.innerWidth >= 768) {
-            $(document).ready(function() {
-                $('#materials-table').DataTable({
-                    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
-                    pageLength: 25,
-                    responsive: true,
-                    order: [[0, 'asc']]
-                });
-            });
-        }
     </script>
     @endpush
 </x-app-layout>

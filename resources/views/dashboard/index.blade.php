@@ -97,7 +97,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Évolution des dépenses</h3>
                 @if($expensesByMonth->isNotEmpty())
-                    <canvas id="expensesChart" height="200"></canvas>
+                    <div id="expensesChart"></div>
                 @else
                     <div class="flex flex-col items-center justify-center py-10 text-gray-400">
                         <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -109,7 +109,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Répartition par catégorie</h3>
                 @if($expensesByCategory->isNotEmpty())
-                    <canvas id="categoryChart" height="200"></canvas>
+                    <div id="categoryChart"></div>
                 @else
                     <div class="flex flex-col items-center justify-center py-10 text-gray-400">
                         <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
@@ -122,7 +122,7 @@
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Avancement des travaux</h3>
-            <canvas id="progressChart" height="120"></canvas>
+            <div id="progressChart"></div>
         </div>
 
         @if($workers->isNotEmpty())
@@ -243,7 +243,6 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function calcWorkerRow(input) {
             const days = parseInt(input.value) || 0;
@@ -270,83 +269,71 @@
         }
     </script>
     <script>
-        const colors = {
-            purple: '#9333ea',
-            blue: '#3b82f6',
-            green: '#10b981',
-            orange: '#f59e0b',
-            red: '#ef4444',
-            teal: '#14b8a6',
-        };
+        const purple = '#9333ea', blue = '#3b82f6', green = '#10b981', orange = '#f59e0b', teal = '#14b8a6';
 
         @if($expensesByMonth->isNotEmpty())
-        new Chart(document.getElementById('expensesChart'), {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($expensesByMonth->keys()) !!},
-                datasets: [{
-                    label: 'Dépenses',
-                    data: {!! json_encode($expensesByMonth->values()) !!},
-                    borderColor: colors.purple,
-                    backgroundColor: colors.purple + '20',
-                    fill: true,
-                    tension: 0.4,
-                }]
+        new ApexCharts(document.getElementById('expensesChart'), {
+            chart: { type: 'area', height: 250, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+            series: [{
+                name: 'Dépenses',
+                data: {!! json_encode($expensesByMonth->values()) !!}
+            }],
+            xaxis: {
+                categories: {!! json_encode($expensesByMonth->keys()) !!},
+                labels: { style: { colors: '#6b7280', fontSize: '12px' } }
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { ticks: { callback: v => v.toLocaleString() + ' FCFA' } }
+            yaxis: {
+                labels: {
+                    formatter: v => v.toLocaleString() + ' FCFA',
+                    style: { colors: '#6b7280', fontSize: '12px' }
                 }
-            }
-        });
+            },
+            stroke: { curve: 'smooth', width: 2, colors: [purple] },
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0 } },
+            colors: [purple],
+            dataLabels: { enabled: false },
+            grid: { borderColor: '#f3f4f6' },
+            tooltip: { y: { formatter: v => v.toLocaleString() + ' FCFA' } }
+        }).render();
         @endif
 
         @if($expensesByCategory->isNotEmpty())
-        const catColors = { materials: colors.blue, labor: colors.orange, transport: colors.teal, misc: colors.purple };
+        const catColors = { materials: blue, labor: orange, transport: teal, misc: purple };
         const catLabels = { materials: 'Matériaux', labor: 'Main d\'œuvre', transport: 'Transport', misc: 'Divers' };
-        new Chart(document.getElementById('categoryChart'), {
-            type: 'doughnut',
-            data: {
-                labels: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catLabels[$k] ?? $k)) !!},
-                datasets: [{
-                    data: {!! json_encode($expensesByCategory->values()) !!},
-                    backgroundColor: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catColors[$k] ?? '#6b7280')) !!},
-                }]
+        new ApexCharts(document.getElementById('categoryChart'), {
+            chart: { type: 'donut', height: 280, fontFamily: 'Inter, sans-serif' },
+            series: {!! json_encode($expensesByCategory->values()) !!},
+            labels: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catLabels[$k] ?? $k)) !!},
+            colors: {!! json_encode($expensesByCategory->keys()->map(fn($k) => $catColors[$k] ?? '#6b7280')) !!},
+            dataLabels: { enabled: false },
+            legend: { position: 'bottom', fontSize: '13px', labels: { colors: '#374151' } },
+            plotOptions: {
+                pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', formatter: () => {!! json_encode(number_format($expensesByCategory->sum(), 0, ',', ' '))!!} + ' FCFA' } } } }
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
+            stroke: { show: false },
+            tooltip: { y: { formatter: v => v.toLocaleString() + ' FCFA' } }
+        }).render();
         @endif
 
-        if (document.getElementById('progressChart')) {
-            new Chart(document.getElementById('progressChart'), {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($tasksProgress->pluck('name')) !!},
-                    datasets: [{
-                        label: 'Avancement %',
-                        data: {!! json_encode($tasksProgress->pluck('progress')) !!},
-                        backgroundColor: {!! json_encode($tasksProgress->map(fn($t) => $t['status'] === 'completed' ? '#10b981' : ($t['status'] === 'in_progress' ? '#9333ea' : '#e5e7eb'))) !!},
-                        borderRadius: 4,
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { min: 0, max: 100, ticks: { stepSize: 20 } },
-                        y: { ticks: { font: { size: 11 } } }
-                    }
-                }
-            });
-        }
+        new ApexCharts(document.getElementById('progressChart'), {
+            chart: { type: 'bar', height: 250, fontFamily: 'Inter, sans-serif', toolbar: { show: false } },
+            series: [{
+                name: 'Avancement %',
+                data: {!! json_encode($tasksProgress->pluck('progress')) !!}
+            }],
+            xaxis: {
+                categories: {!! json_encode($tasksProgress->pluck('name')) !!},
+                labels: { style: { colors: '#6b7280', fontSize: '11px' } }
+            },
+            yaxis: { max: 100, labels: { style: { colors: '#6b7280', fontSize: '12px' } } },
+            colors: {!! json_encode($tasksProgress->map(fn($t) => $t['status'] === 'completed' ? green : ($t['status'] === 'in_progress' ? purple : '#e5e7eb'))) !!},
+            plotOptions: {
+                bar: { borderRadius: 4, horizontal: true, distributed: true }
+            },
+            dataLabels: { enabled: true, formatter: v => v + '%', style: { colors: ['#1f2937'], fontSize: '11px', fontWeight: 600 } },
+            grid: { borderColor: '#f3f4f6' },
+            tooltip: { y: { formatter: v => v + '%' } }
+        }).render();
     </script>
     @endpush
 </x-app-layout>

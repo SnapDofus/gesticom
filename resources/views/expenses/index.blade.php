@@ -9,51 +9,56 @@
         </div>
 
         {{-- Desktop table --}}
-        <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-4">
-                <table id="expenses-table" class="w-full text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500 border-b border-gray-100">
-                            <th class="pb-3 font-medium">Libellé</th>
-                            <th class="pb-3 font-medium">Montant</th>
-                            <th class="pb-3 font-medium">Catégorie</th>
-                            <th class="pb-3 font-medium">Date</th>
-                            <th class="pb-3 font-medium">Justificatif</th>
-                            <th class="pb-3 font-medium">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($expenses as $expense)
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="py-3 font-medium text-gray-900">{{ $expense->label }}</td>
-                            <td class="py-3 text-red-600 font-medium">{{ number_format($expense->amount, 0, ',', ' ') }} FCFA</td>
-                            <td class="py-3">
-                                <span class="px-2 py-1 text-xs font-medium rounded-full
-                                    {{ $expense->category === 'materials' ? 'bg-blue-100 text-blue-700' : ($expense->category === 'labor' ? 'bg-orange-100 text-orange-700' : ($expense->category === 'transport' ? 'bg-teal-100 text-teal-700' : 'bg-purple-100 text-purple-700')) }}">
-                                    {{ ['materials' => 'Matériaux', 'labor' => 'Main d\'œuvre', 'transport' => 'Transport', 'misc' => 'Divers'][$expense->category] ?? $expense->category }}
-                                </span>
-                            </td>
-                            <td class="py-3">{{ $expense->date->format('d/m/Y') }}</td>
-                            <td class="py-3">
-                                @if($expense->receipt)
-                                    <a href="{{ Storage::url($expense->receipt) }}" target="_blank" class="text-purple-600 hover:text-purple-800 text-sm font-medium">Voir</a>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="py-3">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="editExpense({{ $expense->id }})" class="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">Modifier</button>
-                                    <form action="{{ route('expenses.destroy', $expense) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cette dépense ?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">Supprimer</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        <div class="hidden md:block otika-card">
+            <div class="otika-card-body p-0">
+                <div class="table-responsive">
+                    <table class="otika-table">
+                        <thead>
+                            <tr>
+                                <th>Libellé</th>
+                                <th>Montant</th>
+                                <th>Catégorie</th>
+                                <th>Date</th>
+                                <th>Justificatif</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($expenses as $expense)
+                            <tr>
+                                <td><span class="font-medium text-gray-900">{{ $expense->label }}</span></td>
+                                <td class="text-red-600 font-medium">{{ number_format($expense->amount, 0, ',', ' ') }} FCFA</td>
+                                <td>
+                                    <span class="badge {{ $expense->category === 'materials' ? 'badge-blue' : ($expense->category === 'labor' ? 'badge-orange' : ($expense->category === 'transport' ? 'badge-green' : 'badge-purple')) }}">
+                                        {{ ['materials' => 'Matériaux', 'labor' => 'Main d\'œuvre', 'transport' => 'Transport', 'misc' => 'Divers'][$expense->category] ?? $expense->category }}
+                                    </span>
+                                </td>
+                                <td>{{ $expense->date->format('d/m/Y') }}</td>
+                                <td>
+                                    @if($expense->receipt)
+                                        <a href="{{ Storage::url($expense->receipt) }}" target="_blank" class="font-medium text-purple-600 hover:text-purple-800">Voir</a>
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-right">
+                                    <div class="flex items-center justify-end gap-1">
+                                        <button onclick="editExpense({{ $expense->id }})" class="btn-action btn-action-blue">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        </button>
+                                        <form action="{{ route('expenses.destroy', $expense) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cette dépense ?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn-action btn-action-red">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -145,14 +150,7 @@
         </div>
     </div>
 
-    @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.tailwindcss.min.css">
-    @endpush
-
     @push('scripts')
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.tailwindcss.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script>
         function openModal(id) {
             const modal = document.getElementById(id);
@@ -196,16 +194,6 @@
                 });
         }
 
-        if (window.innerWidth >= 768) {
-            $(document).ready(function() {
-                $('#expenses-table').DataTable({
-                    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
-                    pageLength: 25,
-                    responsive: true,
-                    order: [[3, 'desc']]
-                });
-            });
-        }
     </script>
     @endpush
 </x-app-layout>
